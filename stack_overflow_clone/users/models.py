@@ -7,6 +7,7 @@ from django.utils.translation import ugettext_lazy as _
 
 # Stack Overflow Clone Stuff
 from stack_overflow_clone.base.models import UUIDModel
+from stack_overflow_clone.base.utils import upload_to
 
 
 class UserManager(BaseUserManager):
@@ -30,17 +31,19 @@ class UserManager(BaseUserManager):
 
 
 class User(AbstractBaseUser, UUIDModel, PermissionsMixin):
-    first_name = models.CharField(_('First Name'), max_length=120, blank=True)
-    last_name = models.CharField(_('Last Name'), max_length=120, blank=True)
+    name = models.CharField(_('Name'), max_length=120, blank=True)
     # https://docs.djangoproject.com/en/1.11/ref/contrib/postgres/fields/#citext-fields
     email = CIEmailField(_('email address'), unique=True, db_index=True)
     is_staff = models.BooleanField(_('staff status'), default=False,
                                    help_text='Designates whether the user can log into this admin site.')
-
+    about_me = models.CharField(_('Name'), max_length=120, blank=True)
     is_active = models.BooleanField('active', default=True,
                                     help_text='Designates whether this user should be treated as '
                                               'active. Unselect this instead of deleting accounts.')
     date_joined = models.DateTimeField(_('date joined'), default=timezone.now)
+    last_login = models.DateTimeField(_('last login'), auto_now=True, null=True, blank=True)
+    reputation = models.PositiveIntegerField(_('Reputation'), default=0)
+    profile_photo = models.ImageField(upload_to=upload_to, blank=True, verbose_name='Profile Photo')
 
     USERNAME_FIELD = 'email'
     objects = UserManager()
@@ -52,14 +55,3 @@ class User(AbstractBaseUser, UUIDModel, PermissionsMixin):
 
     def __str__(self):
         return str(self.id)
-
-    def get_full_name(self) -> str:
-        """Returns the first_name plus the last_name, with a space in between.
-        """
-        full_name = '{} {}'.format(self.first_name, self.last_name)
-        return full_name.strip()
-
-    def get_short_name(self) -> str:
-        """Returns the short name for the user.
-        """
-        return self.first_name.strip()

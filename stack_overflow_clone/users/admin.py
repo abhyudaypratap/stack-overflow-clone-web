@@ -29,7 +29,7 @@ class UserAdmin(AuthUserAdmin):
     model = User
     fieldsets = (
         (None, {'fields': ('email', 'password')}),
-        ('Personal info', {'fields': ('first_name', 'last_name',)}),
+        ('Personal info', {'fields': ('name',)}),
         ('Permissions', {'fields': ('is_active', 'is_staff', 'is_superuser',
                                     'groups', 'user_permissions')}),
         ('Important dates', {'fields': ('last_login', 'date_joined')}),
@@ -43,7 +43,7 @@ class UserAdmin(AuthUserAdmin):
     readonly_fields = ('date_joined', 'last_login')
     form = MyUserChangeForm
     add_form = MyUserCreationForm
-    list_display = ('email', 'first_name', 'last_name', 'is_active')
+    list_display = ('email', 'name', 'is_active')
     list_filter = ('is_superuser', 'is_active')
-    search_fields = ('first_name', 'last_name', 'email')
+    search_fields = ('name', 'email')
     ordering = ('email',)
