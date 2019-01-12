@@ -1,0 +1,66 @@
+[vagrant]
+192.168.33.12
+
+[vagrant:vars]
+vm=1
+deploy_environment=vagrant
+project_namespace={{ project_name }}-{{ deploy_environment }}
+user=vagrant
+project_path=/home/vagrant/stack-overflow-clone-web
+venv_path=/home/vagrant/venv
+django_requirements_file=requirements/development.txt
+django_settings="settings.development"
+use_letsencrypt=False
+pg_db=stack_overflow_clone
+pg_user=vagrant
+pg_password=vagrant
+domain_name=vagrant.stack_overflow_clone.com
+
+[dev]
+dev.stack_overflow_clone.com
+
+[dev:vars]
+vm=0
+deploy_environment=dev
+user=ubuntu
+project_namespace={{ project_name }}-{{ deploy_environment }}
+project_path=/home/ubuntu/{{ deploy_environment }}/stack-overflow-clone-web
+venv_path=/home/ubuntu/{{ deploy_environment }}/{{ project_name }}-venv
+use_letsencrypt=False
+letsencrypt_email=support@stack_overflow_clone.com
+django_requirements_file=requirements.txt
+django_settings="settings.production"
+domain_name=dev.stack_overflow_clone.com
+
+
+[qa]
+qa.stack_overflow_clone.com
+
+[qa:vars]
+vm=0
+deploy_environment=qa
+user=ubuntu
+project_namespace={{ project_name }}-{{ deploy_environment }}
+project_path=/home/ubuntu/{{ deploy_environment }}/stack-overflow-clone-web
+venv_path=/home/ubuntu/{{ deploy_environment }}/{{ project_name }}-venv
+use_letsencrypt=False
+letsencrypt_email=support@stack_overflow_clone.com
+django_requirements_file=requirements.txt
+django_settings="settings.production"
+domain_name=qa.stack_overflow_clone.com
+
+[production]
+stack_overflow_clone.com
+
+[production:vars]
+vm=0
+deploy_environment=prod
+user=ubuntu
+project_namespace={{ project_name }}-{{ deploy_environment }}
+project_path=/home/ubuntu/{{ deploy_environment }}/stack-overflow-clone-web
+venv_path=/home/ubuntu/{{ deploy_environment }}/{{ project_name }}-venv
+use_letsencrypt=False
+letsencrypt_email=support@stack_overflow_clone.com
+django_requirements_file=requirements.txt
+django_settings="settings.production"
+domain_name=stack_overflow_clone.com

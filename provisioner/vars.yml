@@ -1,0 +1,7 @@
+---
+project_name: stack_overflow_clone
+project_repo_url: git@github.com:abhyudaypratap/stack-overflow-clone-web.git
+project_repo_remote: origin
+repo_version: master
+pg_gis: False
+sass_with_django_compressor: False
