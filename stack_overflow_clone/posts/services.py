@@ -1,5 +1,5 @@
 # StackOverflow Stuff
-from callerbox_rest.people.models import Post
+from stack_overflow_clone.posts.models import Post
 
 
 def create_post(body, post_type, owner,
