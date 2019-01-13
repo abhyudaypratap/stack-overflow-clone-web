@@ -40,3 +40,20 @@ class Post(UUIDModel):
 
     def __str__(self):
         return str(self.id)
+
+
+class Comment(UUIDModel):
+    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='comments_pos')
+    score = models.IntegerField(default=0)
+    body = models.TextField()
+    created_on = models.DateTimeField(default=timezone.now)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL,
+                             related_name='comments', null=True)
+
+    class Meta:
+        verbose_name = _('comment')
+        verbose_name_plural = _('comments')
+        ordering = ('-created_on', )
+
+    def __str__(self):
+        return str(self.id)
