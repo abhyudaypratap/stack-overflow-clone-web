@@ -16,7 +16,7 @@ class Post(UUIDModel):
         ('answer', "Answer"),
     )
 
-    title = models.CharField(max_length=300)
+    title = models.CharField(max_length=300, null=True)
     body = models.TextField()
     post_type = models.CharField(max_length=20, choices=TYPE_CHOICES)
     owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='owned_posts')
