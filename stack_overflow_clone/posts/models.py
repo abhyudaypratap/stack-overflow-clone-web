@@ -43,7 +43,7 @@ class Post(UUIDModel):
 
 
 class Comment(UUIDModel):
-    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='comments_pos')
+    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='comments')
     score = models.IntegerField(default=0)
     body = models.TextField()
     created_on = models.DateTimeField(default=timezone.now)
@@ -53,6 +53,29 @@ class Comment(UUIDModel):
     class Meta:
         verbose_name = _('comment')
         verbose_name_plural = _('comments')
+        ordering = ('-created_on', )
+
+    def __str__(self):
+        return str(self.id)
+
+
+class Vote(UUIDModel):
+
+    TYPE_CHOICES = (
+        (1, "Upvote"),
+        (2, "Downvote"),
+        (3, "Favorite"),
+        (4, "Accepted"),
+    )
+    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='votes')
+    vote_type = models.CharField(max_length=20, choices=TYPE_CHOICES)
+    created_on = models.DateTimeField(default=timezone.now)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL,
+                             related_name='votes', null=True)
+
+    class Meta:
+        verbose_name = _('vote')
+        verbose_name_plural = _('votes')
         ordering = ('-created_on', )
 
     def __str__(self):
