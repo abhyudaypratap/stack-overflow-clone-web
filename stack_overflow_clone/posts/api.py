@@ -16,10 +16,10 @@ class PostViewSet(viewsets.GenericViewSet):
     authentication_classes = (UserTokenAuthentication, )
     permission_classes = (IsAuthenticated, )
 
-    def get_object(self, post_id):
+    def get_object(self, request, post_id):
         post = services.get_post_by_id(post_id=post_id)
         serializers_data = serializers.PostSerializer(post).data
-        return serializers_data
+        return response.Ok(serializers_data)
 
     @action(methods=['POST', ], detail=False)
     def create(self, request):
@@ -83,9 +83,10 @@ class VoteViewSet(viewsets.GenericViewSet):
 
     @action(methods=['POST', ], detail=False)
     def create(self, request, post_id):
-        data = request.data
+        data = request.data.dict()
+        data['post'] = post_id
+        data['user'] = request.user.id
         serializer = self.get_serializer(data=data)
         serializer.is_valid(raise_exception=True)
-        post = services.create_vote(**serializer.validated_data)
-        data = serializers.VoteSerializer(post).data
+        data = services.create_update_vote(**serializer.validated_data)
         return response.Created(data)

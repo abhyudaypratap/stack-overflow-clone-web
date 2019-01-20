@@ -65,6 +65,10 @@ def create_post(body, post_type, owner,
 
 
 def update_post(post_id, data, user):
+    reputation = user.reputation
+    instance = get_post_by_id(post_id=post_id)
+    if not (user == instance.owner or reputation > 200):
+        return instance
     instance = get_post_by_id(post_id=post_id)
     if data.get('body'):
         instance.body = data['body']
@@ -89,28 +93,41 @@ def create_comment(post, body, user):
     return comment
 
 
-def create_vote(post_id, vote_type, user):
+def create_update_vote(post, vote_type, user):
     """
     Create a vote instance
     """
-    Vote.objects.create(
-        post=post_id,
-        user=user,
-        vote_type=vote_type,
-    )
+    data = {'created': True, 'error': False}
+    if vote_type == 1 or vote_type == 2:
+        vote, created = Vote.objects.get_or_create(post=post, user=user)
+        vote.vote_type = vote_type
+        vote.save()
+        data['created'] = created
+        if vote_type == 1 and created:
+            User.objects.filter(id=user.id).update(reputation=F('reputation') + 1)
+        count = vote_count(vote.post.id)
+        Post.objects.filter(id=vote.post.id).update(score=count)
+        data['vote_count'] = count
 
-    if vote_type == "1":
-        User.objects.filter(id=user).update(reputation=F('reputation') + 1)
+    else:
+        if vote_type == 4 and not user == post.parent.owner:
+            data['message'] = "Only user asked the question can accept answer"
+            data['error'] = True
+            return data
 
-    elif vote_type == "3":
-        Post.objects.filter(id=post_id).update(favorite_count=F('favorite_count') + 1)
+        vote, created = Vote.objects.get_or_create(
+            post=post,
+            user=user,
+            vote_type=vote_type,
+        )
+        data['created'] = created
+        if vote_type == 3 and created:
+            Post.objects.filter(id=post.id).update(favorite_count=F('favorite_count') + 1)
 
-    elif vote_type == "4":
-        answer = get_post_by_id(post_id)
-        Post.objects.filter(id=answer.parent).update(accepted_answer=answer)
-    count = vote_count(post_id)
-    Post.objects.filter(id=post_id).update(count=count)
-    return count
+        elif vote_type == 4 and created:
+            Post.objects.filter(id=post.parent.id).update(accepted_answer=post.answer.id)
+
+    return data
 
 
 def vote_count(post_id):
